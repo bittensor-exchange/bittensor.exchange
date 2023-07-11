@@ -1,15 +1,15 @@
 import { configureStore } from '@reduxjs/toolkit'
 import { UserState, userReducer } from './container/user'
-import { KeyDataState, keyReducer } from './container/keyData'
+import { AssetState, assetReducer } from './container/asset'
 
 export const store = configureStore({
     reducer: {
         user: userReducer,
-        key: keyReducer
+        asset: assetReducer
     },
 })
 
 export interface IRoot {
     user: UserState,
-    key: KeyDataState
+    asset: AssetState
 } 

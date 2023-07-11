@@ -33,7 +33,7 @@ export const fetchUser = createAsyncThunk(
                         Authorization: localStorage.getItem("auth"),
                     },
                 })
-            ).data as { id: string, name: string, email: string, roles: string };
+            ) as { id: string, name: string, email: string, roles: string };
             return user;
         } catch (err) {
 

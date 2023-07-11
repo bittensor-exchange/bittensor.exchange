@@ -7,13 +7,15 @@ import Typography from '@mui/material/Typography';
 import { FormControl, InputLabel, Select, MenuItem, TextField, IconButton, InputAdornment, OutlinedInput } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { CopyAll, QrCode, Close } from '@mui/icons-material';
+import { IRoot } from '@/data/store';
+import { useSelector } from 'react-redux';
 
 const style = {
   position: 'absolute' as 'absolute',
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 500,
+  width: 540,
   border: '1px solid #555',
   boxShadow: 24,
   p: 4,
@@ -21,37 +23,10 @@ const style = {
 
 export default function DepositModal({ isOpen, showModal}) {
   
-  const coins = {
-    "TAO": { 
-      networks: {
-        "Bittensor": "TAO"
-      }
-    },
-    "BTC": { 
-      networks: {
-        "Bitcoin": "BTC"
-      }
-    },
-    "USDT": { 
-      networks: {
-        "Tron": "TRX",
-        "Etherium": "ETH",
-      }
-    },
-  }
-
-  const [coin, selectCoin] = useState('TAO');
-  const [network, selectNetwork] = useState('Bittensor');
+  const [assetNo, selectAsset] = useState(0);
   const [address, setAddress] = useState('');
+  const { assets } = useSelector((state: IRoot) => state.asset);
 
-  useEffect(() => {
-    if(!coin || !network) {
-      setAddress('');
-      return;
-    }
-    setAddress('3GjTq5EXcXonGm2cLgWUQ6U4gj4DfRhiaa')
-  }, [coin, network])
-  
   return (
       <Modal
         keepMounted
@@ -75,22 +50,22 @@ export default function DepositModal({ isOpen, showModal}) {
               labelId="select-coin"
               id="select-coin"
               label="Coin"
-              value={coin}
-              onChange={(e) => { selectCoin(e.target.value); selectNetwork(Object.keys(coins[e.target.value].networks)[0]) }}
+              value={assetNo}
+              onChange={(e) => { selectAsset(Number(e.target.value));}}
             >
               {
-                Object.keys(coins).map((item, index) => (
-                  <MenuItem key={index} value={item}>
+                assets.map((item, index) => (
+                  <MenuItem key={index} value={index}>
                     <div className='flex space-x-2'>
                       <Image
                           className="rounded-full"
-                          src={`/coins/${item.toLowerCase()}.png`}
-                          alt={item}
+                          src={`/coins/${item.name.toLowerCase()}.png`}
+                          alt={item.name}
                           width={24}
                           height={24}
                           priority
                       />
-                      <label>{item}</label>
+                      <label>{item.name}</label>
                     </div>
                   </MenuItem>
                 ))
@@ -103,12 +78,12 @@ export default function DepositModal({ isOpen, showModal}) {
               labelId="select-network"
               id="select-network"
               label="Network"
-              value={network}
-              onChange={(e) => selectNetwork(e.target.value)}
+              value={0}
             >
               {
-                Object.keys(coins[coin].networks).map((item, index) => (
-                  <MenuItem key={index} value={item}>
+                assets.length > 0 &&
+                [assets[assetNo].network].map((item, index) => (
+                  <MenuItem key={index} value={index}>
                     <div className='flex space-x-2'>
                       <label>{item}</label>
                     </div>
@@ -120,7 +95,8 @@ export default function DepositModal({ isOpen, showModal}) {
           <FormControl fullWidth sx={{ mt: 3 }} variant="outlined" aria-readonly>
             <InputLabel htmlFor="address">Address</InputLabel>
             <OutlinedInput
-              value={address}
+              value={assets.length > 0 ? assets[assetNo].deposit_address : ''}
+              sx={{ fontSize: '14px' }}
               id="deposit-address"
               endAdornment={
                 <InputAdornment position="end">

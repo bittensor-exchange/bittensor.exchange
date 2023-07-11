@@ -26,8 +26,9 @@ export default function DefaultModal({ isOpen, showModal, title = "", width = 50
         onClose={() => showModal(false)}
         aria-labelledby="keep-mounted-modal-title"
         aria-describedby="keep-mounted-modal-description"
+        sx={{backdropFilter: "blur(10px)"}}
       >
-        <Box sx={{...style, width}} className="bg-zinc-100 dark:bg-zinc-900">
+        <Box sx={{...style, width}} className="bg-zinc-100 dark:bg-zinc-900 glass-modal">
           <div className='absolute right-2 top-2'>
             <IconButton onClick={() => showModal(false)}>
                 <Close />

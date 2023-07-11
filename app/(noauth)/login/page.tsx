@@ -64,6 +64,10 @@ export default function LogIn() {
 				setErrorMessage("The email is not registered to tensor.exchange.\nPlease confirm your email and try again.");
 				showModal(true)
 			}
+			else {
+				setErrorMessage(error.response.data.message);
+				showModal(true)
+			}
 	})
   };
 

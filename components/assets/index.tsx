@@ -4,17 +4,22 @@ import { Button, IconButton } from '@mui/material'
 import numbro from 'numbro'
 import Image from 'next/image'
 import DepositModal from '../modals/deposit'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { IRoot } from '@/data/store'
+import { useDispatch, useSelector } from 'react-redux'
+import { fetchAsset } from '@/data/container/asset'
+import { ThunkDispatch } from '@reduxjs/toolkit'
 
 export default function Assets () {
 
+    const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
     const [isDepositModalOpen, showDepositModal] = useState(false)
+    const { assets } = useSelector((state: IRoot) => state.asset);
 
-    const coins = [
-        { name: "TAO", total: 30.00 },
-        { name: "BTC", total: 0.030201 },
-        { name: "USDT", total: 2500.00 },
-    ]
+    
+    useEffect(() => {
+        dispatch(fetchAsset());
+    }, []);
 
     return (
         <div className="w-[250px] flex flex-col px-4 border-r dark:border-zinc-800 space-y-2">
@@ -45,7 +50,7 @@ export default function Assets () {
                     </div>
                 </div>
                 {
-                    coins.map((item, index) => (
+                    assets.map((item, index) => (
                         <div key={index} className="text-[12px] flex items-center py-1">
                             <div className="w-[130px] flex items-center">
                                 <Image
@@ -59,7 +64,7 @@ export default function Assets () {
                                 <label className='pl-1'>{item.name}</label>
                             </div>
                             <div className="w-[120px]">
-                                {numbro(item.total).format({thousandSeparated: true})}
+                                {numbro(item.balance).format({thousandSeparated: true})}
                             </div>
                             <div className="w-[100px] text-right">
                                 <IconButton aria-label="visibility" sx={{width: 24, height: 24}}>

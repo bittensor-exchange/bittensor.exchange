@@ -1,16 +1,36 @@
 "use client";
 import Link from "next/link";
 import Image from 'next/image'
-import { Button, IconButton } from "@mui/material";
+import { Button, IconButton, Popover, Typography } from "@mui/material";
 import { useSelector } from "react-redux";
 import { IRoot } from "@/data/store";
-import { DarkMode, Light, LightMode, Notifications } from "@mui/icons-material";
+import { LightMode, Notifications } from "@mui/icons-material";
+import { useState } from "react";
+import { useRouter } from 'next/navigation';
 
 export default function DashboardLayout({ children }: {
     children: React.ReactNode
   }) {
 
+    const router = useRouter();
     const { user, login, loading } = useSelector((state: IRoot) => state.user);
+    const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+      setAnchorEl(event.currentTarget);
+    };
+  
+    const handleClose = () => {
+      setAnchorEl(null);
+    };
+  
+    const open = Boolean(anchorEl);
+    const id = open ? 'simple-popover' : undefined;
+
+    const onLogOut = () => {
+        localStorage.removeItem('auth');
+        router.replace('/');
+    }
 
     return (
         <section className="h-full max-h-full w-full flex flex-col">
@@ -51,13 +71,10 @@ export default function DashboardLayout({ children }: {
                         <label className="text-zinc-400 dark:text-white">0.35 BTC</label>
                     </div>
                 </div>
-                {
-                    login && !loading && user && "Hello world!"
-                }
                 <div className="flex items-center pr-2 space-x-2"> 
-                    <IconButton>
+                    <IconButton onClick={handleClick}>
                         <div className="w-[36px] h-[36px] rounded-full border text-[14px] flex items-center justify-center border-zinc-600">
-                            RC
+                            {user.name.split(' ').map((n) => n[0].toUpperCase()).join('')}
                         </div>
                     </IconButton>
                     <IconButton>
@@ -67,6 +84,18 @@ export default function DashboardLayout({ children }: {
                         <LightMode />
                     </IconButton>
                 </div>
+                <Popover
+                        id={id}
+                        open={open}
+                        anchorEl={anchorEl}
+                        onClose={handleClose}
+                        anchorOrigin={{
+                            vertical: 'bottom',
+                            horizontal: 'left',
+                        }}
+                    >
+                    <Button color="inherit" className="bg-zinc-200 dark:bg-zinc-700" onClick={onLogOut}>Logout</Button>
+                </Popover>
             </nav>
             <main className="flex-grow">
                 {children}

@@ -30,3 +30,7 @@ body {
   0% { opacity: 0; }
   100% { opacity: 1; visibility: visible; }
 }
+
+.MuiBox-root.glass-modal{
+  --tw-bg-opacity: 0.2;
+}
