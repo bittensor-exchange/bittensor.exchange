@@ -163,7 +163,6 @@ export default function OrderForm ({ action = "buy", type = "limit" }) {
             <LoadingButton variant='contained' color={action=="buy" ? "success" : "error"} className='dark:text-[#0d180e]'
                 onClick={() => createOrder()}
                 loading={loading}
-                loadingPosition="start"
             >
                 {action} TAO
             </LoadingButton>

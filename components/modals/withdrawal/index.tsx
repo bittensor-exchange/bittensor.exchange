@@ -54,7 +54,7 @@ export default function WithdrawalModal({ isOpen, showModal}) {
               message: <div><label className='text-[16px] font-bold'>Success!</label><br/>{`Please confirm your email`}</div>,
               variant: 'success',
           });
-          setWithdrawId(resp.id);
+          setWithdrawId(resp['id']);
       } catch (error) {
           enqueueSnackbar({
               message: <div><label className='text-[16px] font-bold'>Error</label><br/>{`${error.response?.data?.message ?? error.message}`}</div>,

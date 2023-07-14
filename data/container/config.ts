@@ -7,7 +7,7 @@ export interface ConfigState {
 }
 
 const initialState: ConfigState = {
-    theme: 'system'
+    theme: typeof localStorage !== 'undefined' ? (localStorage.getItem('theme') as ThemeColor ?? 'system') : 'system',
 }
 
 export const configSlice = createSlice({
@@ -16,6 +16,7 @@ export const configSlice = createSlice({
     reducers: {
       switchThemeColor(state, action) {
         state.theme = action.payload;
+        localStorage.setItem('theme', state.theme);
       }
     },
 })

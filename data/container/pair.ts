@@ -19,7 +19,6 @@ interface Trade {
     id: number;
     takerAction: string;
     price: number;
-    createdAt: Date;
     loading: boolean;
 }
 
@@ -40,7 +39,7 @@ const initialState: PairState = {
         token2: "BTC",
         high: undefined,
         low: undefined,
-        volumn: undefined,
+        volume: undefined,
         change: undefined,
         quote_price: 0,
         loading: false
@@ -49,7 +48,6 @@ const initialState: PairState = {
         id: 0,
         takerAction: "buy",
         price: 0,
-        createdAt: new Date(),
         loading: false
     },
     loading: false,
