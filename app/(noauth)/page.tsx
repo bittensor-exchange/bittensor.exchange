@@ -10,21 +10,29 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import cn from 'classnames';
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   
   const [loading, setLoading] = useState(true);
+  const { replace } = useRouter();
+
 
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
+      if (!localStorage.getItem("auth")) {
+        replace("/login");
+      } else {
+        replace("/dashboard");
+      }
     }, 2000);
   }, []);
 
   return (
     <div className="h-full max-h-full w-full">
       { loading && <FirstLoading /> }
-      <section className={cn("h-full max-h-full w-full flex flex-col", loading && "hidden")}>
+      <section className={cn("h-full max-h-full w-full flex flex-col", "hidden")}>
         <nav className="z-10 w-full items-center justify-between font-mono text-sm flex h-[64px] shrink-0 border-b dark:border-zinc-800 shadow dark:shadow-none dark:bg-zinc-900">
             <Link href="/" className="flex items-center ml-2 w-[250px]">
                 <Image

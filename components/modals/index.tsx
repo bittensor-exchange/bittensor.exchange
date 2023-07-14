@@ -29,14 +29,14 @@ export default function DefaultModal({ isOpen, showModal, title = "", width = 50
         sx={{backdropFilter: "blur(10px)"}}
       >
         <Box sx={{...style, width}} className="bg-zinc-100 dark:bg-zinc-900 glass-modal">
-          <div className='absolute right-2 top-2'>
+          <div className='absolute right-2 top-4'>
             <IconButton onClick={() => showModal(false)}>
                 <Close />
             </IconButton>
           </div>
           {
             title && 
-            <Typography component="h6" variant="h6" className='-mt-4'>
+            <Typography component="h6" variant="h6" className='-mt-2'>
                 {title}
             </Typography>
           }

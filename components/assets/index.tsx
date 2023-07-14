@@ -9,33 +9,54 @@ import { IRoot } from '@/data/store'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchAsset } from '@/data/container/asset'
 import { ThunkDispatch } from '@reduxjs/toolkit'
+import WithdrawalModal from '../modals/withdrawal'
+import { fetchCurrentPair } from '@/data/container/pair'
 
 export default function Assets () {
 
     const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
     const [isDepositModalOpen, showDepositModal] = useState(false)
+    const [isWithdrawModalOpen, showWithdrawModal] = useState(false)
     const { assets } = useSelector((state: IRoot) => state.asset);
+    const { price } = useSelector((state: IRoot) => state.pair.lastTrade);
+    const [totalBtc, setTotalBtc] = useState(0);
+    const [hideAsset, setHideAsset] = useState(false);
+    const { quote_price } = useSelector((state: IRoot) => state.pair.currentPair);
 
-    
     useEffect(() => {
-        dispatch(fetchAsset());
+        const refetch = async () => {
+            dispatch(fetchAsset());
+            dispatch(fetchCurrentPair());
+        }
+        refetch();
+        const timerId = setInterval(() => refetch(), 5000);
+        return () => clearInterval(timerId);
     }, []);
+
+    useEffect(() => {
+        let sum = 0;
+        for(let asset of assets) {
+            if(asset.name === 'BTC') sum += asset.balance;
+            else sum += asset.balance * price;;
+        }
+        setTotalBtc(sum);
+    }, [assets]);
 
     return (
         <div className="w-[250px] flex flex-col px-4 border-r dark:border-zinc-800 space-y-2">
             <div className="py-2 flex items-end pt-4 pl-2">
                 <label className='pr-2'>Assets Overview</label>
-                <IconButton aria-label="visibility" sx={{width: 20, height: 20}}>
+                <IconButton aria-label="visibility" sx={{width: 20, height: 20}} onClick={() => setHideAsset(!hideAsset)}>
                     <Visibility sx={{width: 16, height: 16}} />
                 </IconButton>
             </div>
             <div className='flex items-end pl-2 pt-2'>
-                <label>50 TAO</label>
-                <label className='pl-2 text-[12px] text-zinc-400'>≈ {numbro(2537).formatCurrency()}</label>
+                <label>{numbro(totalBtc).formatCurrency({ mantissa: 2, trimMantissa: true })} BTC</label>
+                <label className='pl-2 text-[12px] text-zinc-400'>≈ {numbro(totalBtc * quote_price).formatCurrency()}</label>
             </div>
             <div className='flex justify-between pt-2 space-x-2'>
                 <Button variant='contained' color="success" size='small' fullWidth onClick={() => showDepositModal(true)}>Deposit</Button>
-                <Button variant='contained' color="error" size='small' fullWidth className='dark:text-[#0d180e]' >Withdraw</Button>
+                <Button variant='contained' color="error" size='small' fullWidth className='dark:text-[#0d180e]' onClick={() => showWithdrawModal(true)} >Withdraw</Button>
             </div>
             <div>
                 <div className="text-[12px] pt-8 pb-1 flex">
@@ -64,7 +85,7 @@ export default function Assets () {
                                 <label className='pl-1'>{item.name}</label>
                             </div>
                             <div className="w-[120px]">
-                                {numbro(item.balance).format({thousandSeparated: true})}
+                                {numbro(item.balance).format({thousandSeparated: true, mantissa: 6, trimMantissa: true})}
                             </div>
                             <div className="w-[100px] text-right">
                                 <IconButton aria-label="visibility" sx={{width: 24, height: 24}}>
@@ -79,6 +100,7 @@ export default function Assets () {
                 }
             </div>
             <DepositModal isOpen={isDepositModalOpen} showModal={showDepositModal} />
+            <WithdrawalModal isOpen={isWithdrawModalOpen} showModal={showWithdrawModal}/>
         </div>
     )
 }

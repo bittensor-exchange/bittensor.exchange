@@ -9,6 +9,7 @@ interface Asset {
     deposit_address: string;
     balance: number;
     order_balance: number;
+    available_balance: number;
     createdAt: Date;
     updatedAt: Date;
 }

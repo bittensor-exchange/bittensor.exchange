@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import useSWR from 'swr';
-import { fetcher } from 'utils/helpers';
+import { fetcher } from '../utils/helpers';
 
 /**
  * Re-usable SWR api implementation.

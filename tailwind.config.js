@@ -1,5 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+
+  darkMode: 'class',
   corePlugins: {
     preflight: true,
   },
@@ -19,8 +21,25 @@ module.exports = {
       colors: {
         'buy': '#48C076',
         'sell': '#d9304e',
+      },
+      animation: {
+        'shake': 'shake 0.1s'
+      },
+      keyframes: {
+        shake: {
+          "0%, 100%": {
+            "transform": "translateX(-3%)",
+            "animation-timing-function": "cubic-bezier(0.8, 0, 1, 1)"
+          },
+          "50%": {
+            "transform": "translateX(3%)",
+            "animation-timing-function": "cubic-bezier(0, 0, 0.2, 1)"
+          }
+        }
       }
     },
   },
-  plugins: [],
+  plugins: [
+    require('tailwind-scrollbar'),
+  ],
 }

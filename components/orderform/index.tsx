@@ -1,6 +1,16 @@
 'use client'
-import { Button, Slider, TextField } from '@mui/material'
+import { Button, Slider, TextField, Tooltip } from '@mui/material'
+import axios from 'axios';
 import cn from 'classnames'
+import numbro from 'numbro';
+import { useEffect, useState } from 'react';
+import { LoadingButton } from '@mui/lab';
+import { useSnackbar } from 'notistack';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateOpenOrders } from '@/data/container/api';
+import { IRoot } from '@/data/store';
+import { fetchAsset } from '@/data/container/asset';
+import { ThunkDispatch } from '@reduxjs/toolkit';
 
 const marks = [
     { value: 0, label: '',},
@@ -9,38 +19,154 @@ const marks = [
     { value: 75, label: '',},
     { value: 100, label: '',},
   ];    
-  
-function valuetext(value: number) {
-return `${value}°C`;
-}
 
-export default function OrderForm ({ type = "buy" }) {
+export default function OrderForm ({ action = "buy", type = "limit" }) {
+
+    const assets = useSelector((state:IRoot) => state.asset.assets);
+    const pair = useSelector((state:IRoot) => state.pair.currentPair);
+
+    const [price, setPrice] = useState("");
+    const [amount, setAmount] = useState("");
+    const [sliderValue, setSliderValue] = useState(0);
+
+    const btc = 30000;
+    const [loading, setLoading] = useState(false);
+    const { enqueueSnackbar } = useSnackbar();
+    const dispatch = useDispatch();
+    const dispatchThunk = useDispatch<ThunkDispatch<any, any, any>>();
+
+    const onAmountChange = (e) => { 
+        setAmount(e.target.value);
+        const _amount = Number(e.target.value);
+        const _price = Number(price);
+        if(availableBalance && !Number.isNaN(_amount)) {
+            if(action == "buy" && !Number.isNaN(_price) && type == "limit")
+                setSliderValue((_price * _amount) / availableBalance * 100);
+            if(action == "sell")
+                setSliderValue(_amount / availableBalance * 100);
+        }
+    }
+
+    const onSliderChange = (e, value) => {
+        if (value == 0) setAmount("");
+        if(action == "buy") {
+            const _price = Number(price);
+            if(!Number.isNaN(_price) && _price > 0)
+                setAmount(numbro(availableBalance * Number(value) / 100 / _price).format({
+                    mantissa: 6,
+                    trimMantissa: true
+                }));
+            else setAmount("");
+        }
+        else setAmount(numbro(availableBalance * Number(value) / 100).format({
+            mantissa: 6,
+            trimMantissa: true
+        }));
+        setSliderValue(Number(value));
+    }
+
+    const createOrder = async () => {
+        setLoading(true);
+        try {
+            const resp = await axios.post('/api/orders/create', {
+                pair: 'TAO/BTC',
+                price: type == "market" ? 0 : Number(price),
+                amount: Number(amount),
+                action: action,
+                type: type,
+            })
+            console.log(resp);
+            setPrice("");
+            setAmount("");
+            setSliderValue(0);
+            enqueueSnackbar({
+                message: <div><label className='text-[16px] font-bold'>Success!</label><br/>{`${type.toUpperCase()} ${action.toUpperCase()} TAO/BTC`}</div>,
+                variant: 'success',
+            });
+            dispatch(updateOpenOrders());
+            dispatchThunk(fetchAsset());
+        } catch (error) {
+            enqueueSnackbar({
+                message: <div><label className='text-[16px] font-bold'>Error</label><br/>{`${error.response?.data?.message ?? error.message}`}</div>,
+                variant: 'error',
+            });
+            
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const availableToken = action == 'buy' ? pair.token2 : pair.token1;
+    const availableBalance = assets.length > 0 ? assets.find(asset => asset.name == availableToken).available_balance : 0;
+    const volumn = price && amount ? Number(price) * Number(amount) : 0;
 
     return (
-        <div className="w-full flex flex-col px-2 space-y-2 py-2">
-            <div className="text-[12px]">
-                {type == "buy" ? "Buy" : "Sell"} TAO
+        <div className="w-full flex flex-col px-2 py-2">
+            <div className='w-full border dark:border-zinc-600 rounded h-[30px] flex items-center px-1 text-[12px] text-zinc-500 mt-2'>
+                {
+                    type == "limit" ?
+                        <>
+                            <label>Price</label>
+                            <Tooltip title={`≈ ${numbro(btc * Number(price)).formatCurrency()}`} placement="top-end" arrow sx={{fontSize: 14}}>
+                                <input className='bg-transparent flex-grow px-2 text-right text-[14px] font-bold outline-none w-[50px] dark:text-white' 
+                                    value={ price}
+                                    onChange={(e) => setPrice(e.target.value)}
+                                    disabled = { loading }
+                                />
+                            </Tooltip>
+                            <label>BTC</label>
+                        </>
+                        :
+                        <div className='text-center w-full'>
+                            Best Market Price
+                        </div>
+                }
             </div>
-            <div className='w-full border dark:border-zinc-600 rounded h-[30px] flex items-center px-1 text-[12px] text-zinc-500'>
-                <label>Price</label>
-                <input className='bg-transparent flex-grow px-2 text-right text-[14px] font-bold outline-none w-[50px]' />
-                <label>BTC</label>
-            </div>
-            <div className='w-full border dark:border-zinc-600 rounded h-[30px] flex items-center px-1 text-[12px] text-zinc-500'>
+            <div className={cn('w-full border dark:border-zinc-600 rounded h-[30px] flex items-center px-1 text-[12px] text-zinc-500 mt-2', sliderValue > 100 && 'animate-shake !border-sell/[0.8]')}>
                 <label>Amount</label>
-                <input className='bg-transparent flex-grow px-2 text-right text-[14px] font-bold outline-none w-[50px] text-white' />
-                <label>TAO</label>
+                <input className='bg-transparent flex-grow px-2 text-right text-[14px] font-bold outline-none w-[50px] dark:text-white' 
+                    value={amount}
+                    onChange={onAmountChange}
+                />
+                {/* <label>{ type == "limit" || action == "sell" ? pair.token1 : pair.token2 } </label> */}
+                <label>{ pair.token1 } </label>
             </div>
             <Slider
-                aria-label="Custom marks"
+                aria-label="slider"
                 defaultValue={0}
-                getAriaValueText={valuetext}
+                value={sliderValue}
                 step={10}
-                valueLabelDisplay="auto"
+                valueLabelDisplay='auto'
+                disabled={ type == "market" && action == "buy" }
+                valueLabelFormat={(value) => `${numbro(availableBalance * value / 100).format({ mantissa: 6, trimMantissa: true })} ${availableToken}`}
+                onChange={onSliderChange}
+                color={sliderValue > 100 ? "secondary" : "primary"}
                 marks={marks}
                 size='small'
             />
-            <Button variant='contained' color={type=="buy" ? "success" : "error"} className='dark:text-[#0d180e]'>{type} TAO</Button>
+            <div className='flex justify-between text-[12px] mb-2 px-1 dark:text-zinc-300'>
+                <label>Available:</label>
+                <label className='text-right'>
+                    { numbro(availableBalance).format({ mantissa: 6, trimMantissa: true }) }
+                    &nbsp;
+                    { action == "buy" ? pair.token2 : pair.token1} 
+                </label>
+            </div>
+            <div className='flex justify-between text-[12px] mb-2 px-1 dark:text-zinc-300'>
+                <label>Volumn:</label>
+                <label className='text-right'>
+                    {numbro(volumn).format({ mantissa: 6, trimMantissa: true })}
+                    &nbsp;
+                    {pair.token2} 
+                </label>
+            </div>
+            <LoadingButton variant='contained' color={action=="buy" ? "success" : "error"} className='dark:text-[#0d180e]'
+                onClick={() => createOrder()}
+                loading={loading}
+                loadingPosition="start"
+            >
+                {action} TAO
+            </LoadingButton>
         </div>
     )
 }

@@ -1,42 +1,52 @@
 'use client'
-import cn from 'classnames'
 import Orders from './orders';
+import useApi from '@/hooks/useApi';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from "react-redux";
+import { ThunkDispatch } from "@reduxjs/toolkit";
+import { fetchLastTrade } from "@/data/container/pair";
+import { IRoot } from "@/data/store";
+import cn from 'classnames';
 
 export default function OrderBook () {
     
-    const currentPrice = "0.020500";
+    const { name: currentPairName } = useSelector((state: IRoot) => state.pair.currentPair);
+    const { price: lastPrice, takerAction } = useSelector((state: IRoot) => state.pair.lastTrade);
+    const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
 
-    const sellOrders = [
-        { price: "0.021000", amount: "10.5000" },
-        { price: "0.022020", amount: "20.4500" },
-        { price: "0.024522", amount: "25.0000" },
-        { price: "0.025541", amount: "100.0000" },
-        { price: "0.026069", amount: "50.0000" },
-        { price: "0.027150", amount: "200.0000" },
-        { price: "0.027250", amount: "120.0000" },
-        { price: "0.027300", amount: "500.0000" },
-        { price: "0.027300", amount: "500.0000" },
-        { price: "0.027300", amount: "500.0000" },
-        { price: "0.027300", amount: "500.0000" },
-        { price: "0.027300", amount: "500.0000" },
-        { price: "0.027300", amount: "500.0000" },
-    ]
+    const { data: orders, mutate } = useApi("/api/orders", { pair: "TAO/BTC" });
 
-    const buyOrders = [
-        { price: "0.020000", amount: "20.0000" },
-        { price: "0.019020", amount: "20.4500" },
-        { price: "0.018500", amount: "25.0000" },
-        { price: "0.018400", amount: "100.0000" },
-        { price: "0.018000", amount: "50.0000" },
-        { price: "0.016500", amount: "200.0000" },
-        { price: "0.016200", amount: "250.0000" },
-        { price: "0.016000", amount: "300.0000" },
-        { price: "0.016000", amount: "300.0000" },
-        { price: "0.016000", amount: "300.0000" },
-        { price: "0.016000", amount: "300.0000" },
-        { price: "0.016000", amount: "300.0000" },
-        { price: "0.016000", amount: "300.0000" },
-    ];
+    const [buyOrders, sellOrders] = orders || [[],[]];
+
+    const [highlight, setHighlight] = useState(false);
+
+    useEffect(() => {
+        const timer = setInterval(mutate, 1000);
+        return () => clearInterval(timer);
+    }, [])
+
+    useEffect(() => {
+        if(!currentPairName) return;
+
+        const timer = setInterval(() => {
+            dispatch(fetchLastTrade(currentPairName));
+        }, 1500);
+
+        dispatch(fetchLastTrade(currentPairName));
+
+        return () => {
+            clearInterval(timer);
+        }
+    }, [currentPairName])
+
+    useEffect(() => {
+        setHighlight(true);
+        const timer = setTimeout(() => {
+            setHighlight(false);
+        }, 1000)
+        return () => clearTimeout(timer);
+    }, [lastPrice, takerAction]);
+
 
     return (
         <div className="w-[250px] flex flex-col px-2">
@@ -56,7 +66,7 @@ export default function OrderBook () {
             </div>
             <div className='flex flex-col'>
                 <div className="flex text-[12px] text-bold py-1 items-center">
-                    <div className="text-[14px] font-mono">{currentPrice}</div>
+                    <div className={cn("text-[14px] font-mono", highlight && (takerAction == "buy" ? 'text-buy' : 'text-sell'))}>{lastPrice ?? ""}</div>
                     <div className="pl-4 text-[12px]">50.8$</div>
                 </div>
                 <Orders type="buy" data={buyOrders} />

@@ -1,12 +1,16 @@
 "use client";
 import Link from "next/link";
 import Image from 'next/image'
-import { Button, IconButton, Popover, Typography } from "@mui/material";
-import { useSelector } from "react-redux";
+import { Button, IconButton, Popover, Typography, useMediaQuery } from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
 import { IRoot } from "@/data/store";
-import { LightMode, Notifications } from "@mui/icons-material";
+import { DarkMode, LightMode, Notifications } from "@mui/icons-material";
 import { useState } from "react";
 import { useRouter } from 'next/navigation';
+import Notification from "@/components/notification";
+import { switchThemeColor } from "@/data/container/config";
+import cn from 'classnames';
+import numbro from "numbro";
 
 export default function DashboardLayout({ children }: {
     children: React.ReactNode
@@ -15,6 +19,21 @@ export default function DashboardLayout({ children }: {
     const router = useRouter();
     const { user, login, loading } = useSelector((state: IRoot) => state.user);
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+    const pair = useSelector((state: IRoot) => state.pair.currentPair);
+
+    const { price: lastPrice, takerAction } = useSelector((state: IRoot) => state.pair.lastTrade);
+		
+    const themeColor = useSelector((state: IRoot) => state.config.theme);
+    const systemColor = useMediaQuery('(prefers-color-scheme: dark)');
+    const prefersDarkMode = themeColor == "system" ? (systemColor ? 'dark' : 'light') : themeColor;
+
+    const { quote_price, name, change, high, low, volume } = useSelector((state: IRoot) => state.pair.currentPair);
+		
+    const dispatch = useDispatch();
+    const onSwitchTheme = () => {
+        dispatch(switchThemeColor(prefersDarkMode == "dark" ? "light" : "dark"));
+        console.log('theme', prefersDarkMode);
+    }
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
       setAnchorEl(event.currentTarget);
@@ -48,27 +67,27 @@ export default function DashboardLayout({ children }: {
                 </Link>
                 <div className="flex-grow flex space-x-4 font-sans text-[12px] text-zinc-500 dark:text-zinc-400">
                     <div className="flex flex-col text-[16px] font-mono justify-center text-zinc-800 dark:text-white">
-                        TAO/BTC
+                        {pair.name}
                     </div>
                     <div className="flex flex-col">
-                        <label className="text-[14px] text-buy">0.0017852</label>
-                        <label>$50.8</label>
+                        <label className={cn("text-[14px]", takerAction == "buy" ? "text-buy" : "text-sell")}>{lastPrice ?? ""}</label>
+                        <label>{numbro(lastPrice * quote_price).formatCurrency()}</label>
                     </div>
                     <div className="flex flex-col">
                         <label>24h Change</label>
-                        <label className="text-sell">-0.00012 -0.8%</label>
+                        <label className="text-sell">{numbro(change).formatCurrency({mantissa:6, trimMantissa: true})} -0.8%</label>
                     </div>
                     <div className="flex flex-col">
                         <label>24h High</label>
-                        <label className="text-zinc-400 dark:text-white">0.0017930</label>
+                        <label className="text-zinc-400 dark:text-white">{numbro(high).format({mantissa: 6, trimMantissa: true})}</label>
                     </div>
                     <div className="flex flex-col">
                         <label>24h Low</label>
-                        <label className="text-zinc-400 dark:text-white">0.0017745</label>
+                        <label className="text-zinc-400 dark:text-white">{numbro(low).format({mantissa: 6, trimMantissa: true})}</label>
                     </div>
                     <div className="flex flex-col">
                         <label>24h Volumn</label>
-                        <label className="text-zinc-400 dark:text-white">0.35 BTC</label>
+                        <label className="text-zinc-400 dark:text-white">{numbro(volume).format({mantissa: 4, trimMantissa: true})} BTC</label>
                     </div>
                 </div>
                 <div className="flex items-center pr-2 space-x-2"> 
@@ -77,11 +96,11 @@ export default function DashboardLayout({ children }: {
                             {user.name.split(' ').map((n) => n[0].toUpperCase()).join('')}
                         </div>
                     </IconButton>
-                    <IconButton>
-                        <Notifications />
-                    </IconButton>
-                    <IconButton>
-                        <LightMode />
+                    <Notification />
+                    <IconButton onClick={onSwitchTheme}>
+                    {
+                        prefersDarkMode == "dark" ? <DarkMode /> : <LightMode />
+                    }
                     </IconButton>
                 </div>
                 <Popover

@@ -7,13 +7,12 @@
   --background-end-rgb: 255, 255, 255;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+.dark {
+  --foreground-rgb: 255, 255, 255;
+  --background-start-rgb: 0, 0, 0;
+  --background-end-rgb: 0, 0, 0;
 }
+
 
 
 body {
@@ -31,6 +30,24 @@ body {
   100% { opacity: 1; visibility: visible; }
 }
 
-.MuiBox-root.glass-modal{
+.dark .MuiBox-root.glass-modal{
   --tw-bg-opacity: 0.2;
+}
+
+.dark * {
+  scrollbar-width: thin;
+  scrollbar-color: #181818 #252525;
+}
+
+.dark *::-webkit-scrollbar {
+  width: 0.6em;
+  position: absolute;
+}
+
+.dark *::-webkit-scrollbar-thumb {
+  background-color: rgb(188 188 188 / 60%);
+}
+
+.dark *::-webkit-scrollbar-track {
+  background-color: #323431;
 }

@@ -9,7 +9,7 @@ export default function Orders ({ type = "buy", data = [] }) {
 
     useEffect(() => {
         const onWindowResize = () => {
-            const height = (Math.max(window.innerHeight, 680) - 240 - 64 - 60) / 2;
+            const height = (Math.max(window.innerHeight, 680) - 250 - 64 - 60) / 2;
             setMaxHeight(height)
         }
 
@@ -26,16 +26,16 @@ export default function Orders ({ type = "buy", data = [] }) {
             style={{ height: maxHeight }}
         >
             {
-                data.slice(0, maxHeight / 24).map((item, index) => (
-                    <div key={index} className="flex items-center justify-between px-2 py-1 text-[10px]">
+                data.slice(0, maxHeight / 25).map((item, index) => (
+                    <div key={index} className="flex items-center justify-between px-2 py-1 text-[12px]">
                         <div className={cn("w-[90px]", type == "buy" ? "text-buy" : "text-sell")}>
                             {item.price}
                         </div>
                         <div className="w-[100px] text-right">
-                            {item.amount}
+                            {numbro(item.amount).format({ mantissa: 4, trimMantissa: true })}
                         </div>
                         <div className="w-[100px] text-right">
-                            {numbro(item.price * item.amount).format({ mantissa: 2 })}
+                            {numbro(item.price * item.amount).format({ mantissa: 4, trimMantissa: true })}
                         </div>
                     </div>
                 ))
