@@ -1,34 +1,42 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Frontend for Tensor Exchange
+
+Welcome to the frontend repository for Tensor Exchange! This project aims to provide a user-friendly interface for Tensor Exchange, leveraging the power of Next.js version 13 along with Tailwind CSS and Material-UI (Mui).
+
+## Tech Stack
+
+The frontend is built using the following technologies:
+
+- Next.js v13: A popular React framework for building modern web applications.
+- Tailwind CSS: A utility-first CSS framework for creating highly customizable user interfaces.
+- Material-UI (Mui): A React UI framework that implements Material Design components.
+
+## Project Goal
+
+The primary goal of this project is to develop a robust and intuitive frontend interface for Tensor Exchange. By utilizing Next.js v13, Tailwind CSS, and Mui, we aim to deliver a seamless user experience, highly customizable styling, and a rich set of UI components.
 
 ## Getting Started
 
-First, run the development server:
+To get started with the frontend for Tensor Exchange, follow these steps:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
+1. Clone the repository: git clone https://github.com/TaoTrade/frontend.git
+2. Install dependencies: cd frontend && yarn
+3. Start the development server: yarn dev
+4. Open your browser and visit http://localhost:3000 to access the Tensor Exchange frontend.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Contributing
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Contributions to the frontend repository are highly appreciated. If you have any ideas, bug fixes, or feature enhancements, please open an issue or submit a pull request. Let's work together to make the Tensor Exchange frontend even better.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+Please review the [CONTRIBUTING.md](CONTRIBUTING.md) file for more details on the contribution guidelines.
 
-## Learn More
+## License
 
-To learn more about Next.js, take a look at the following resources:
+This project is licensed under the [MIT License](LICENSE). Feel free to use, modify, and distribute the code in accordance with the terms of this license.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Contact
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+For any questions or inquiries, please reach out to the project maintainers.
 
-## Deploy on Vercel
+Enjoy exploring Tensor Exchange through its intuitive frontend interface!
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Note: This project is not officially affiliated with or endorsed by Tensor Exchange.
