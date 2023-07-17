@@ -1,6 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 import axios, { AxiosError } from "axios"
-import { IRoot } from "@/data/store";
 
 interface Pair {
     id: number;
@@ -101,7 +100,8 @@ export const pairSlice = createSlice({
                 state.lastTrade.loading = true;
             })
             .addCase(fetchLastTrade.fulfilled, (state, action) => {
-                state.lastTrade = action.payload
+                if(!action.payload) return;
+                state.lastTrade = action.payload;
                 state.lastTrade.loading = false;
             })
             .addCase(fetchLastTrade.rejected, (state, action) => {

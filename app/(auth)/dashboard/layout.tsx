@@ -79,15 +79,15 @@ export default function DashboardLayout({ children }: {
                     </div>
                     <div className="flex flex-col">
                         <label>24h High</label>
-                        <label className="text-zinc-400 dark:text-white">{numbro(high).format({mantissa: 6, trimMantissa: true})}</label>
+                        <label className="text-zinc-400 dark:text-white">{numbro(high)?.format({mantissa: 6, trimMantissa: true}) ?? 0}</label>
                     </div>
                     <div className="flex flex-col">
                         <label>24h Low</label>
-                        <label className="text-zinc-400 dark:text-white">{numbro(low).format({mantissa: 6, trimMantissa: true})}</label>
+                        <label className="text-zinc-400 dark:text-white">{numbro(low)?.format({mantissa: 6, trimMantissa: true}) ?? 0}</label>
                     </div>
                     <div className="flex flex-col">
                         <label>24h Volumn</label>
-                        <label className="text-zinc-400 dark:text-white">{numbro(volume).format({mantissa: 4, trimMantissa: true})} BTC</label>
+                        <label className="text-zinc-400 dark:text-white">{numbro(volume)?.format({mantissa: 4, trimMantissa: true}) ?? 0} BTC</label>
                     </div>
                 </div>
                 <div className="flex items-center pr-2 space-x-2"> 
