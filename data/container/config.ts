@@ -1,13 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit"
 
-export type ThemeColor = 'light' | 'dark' | 'system';
+export type ThemeColor = 'light' | 'dark';
 
 export interface ConfigState {
   theme: ThemeColor;
 }
 
 const initialState: ConfigState = {
-    theme: typeof localStorage !== 'undefined' ? (localStorage.getItem('theme') as ThemeColor ?? 'system') : 'system',
+    theme: typeof localStorage !== 'undefined' ? (localStorage.getItem('theme') as ThemeColor ?? 'dark') : 'dark',
 }
 
 export const configSlice = createSlice({

@@ -61,7 +61,9 @@ export default function WithdrawalModal({ isOpen, showModal, selectedCoin}) {
   }
 
   const confirmWithdrawal = async () => {
+    setLoading(true);
     try {
+
       const resp = await axios.put(`/api/withdraw/confirm/${withdrawId}`, { confirmationCode });
       console.log(resp);
       enqueueSnackbar({

@@ -9,6 +9,7 @@ import axios from 'axios';
 import Provider from '@/data/provider';
 import Theme from '@/components/theme';
 
+const theme = typeof localStorage == "undefined" ? "dark" : localStorage.getItem("theme") == "dark" ? "dark" : "";
 
 export default function RootLayout({
   children,
@@ -22,7 +23,7 @@ export default function RootLayout({
         <title>Tensor Exchange</title>
         <meta name="description" content="TAO Trade - Tensor Exchange" />
       </head>
-      <body className='overflow-y'>
+      <body className={'overflow-y ' + theme}>
         <Provider>
           <Theme>
             {children}
