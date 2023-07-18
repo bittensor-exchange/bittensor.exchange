@@ -1,20 +1,14 @@
 'use client'
 import * as React from 'react';
-import Box from '@mui/material/Box';
-import Modal from '@mui/material/Modal';
 import Image from 'next/image';
-import Typography from '@mui/material/Typography';
 import { FormControl, InputLabel, Select, MenuItem, TextField, IconButton, InputAdornment, OutlinedInput, Button } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { CopyAll, QrCode, Close } from '@mui/icons-material';
+import { CopyAll } from '@mui/icons-material';
 import { IRoot } from '@/data/store';
 import { useSelector } from 'react-redux';
 import DefaultModal from '..';
 import axios from 'axios';
-import { updateOpenOrders } from '@/data/container/api';
-import { fetchAsset } from '@/data/container/asset';
 import { enqueueSnackbar } from 'notistack';
-import { type } from 'os';
 import { LoadingButton } from '@mui/lab';
 import { truncateAddress, copy2Clipboard } from '@/utils/helpers';
 
@@ -29,9 +23,9 @@ const style = {
   p: 4,
 };
 
-export default function WithdrawalModal({ isOpen, showModal}) {
+export default function WithdrawalModal({ isOpen, showModal, selectedCoin}) {
   
-  const [assetNo, selectAsset] = useState(0);
+  const [assetNo, selectAsset] = useState(selectedCoin);
   const [address, setAddress] = useState('');
   const [amount, setAmount] = useState('');
   const [loading, setLoading] = useState(false);
@@ -90,7 +84,7 @@ export default function WithdrawalModal({ isOpen, showModal}) {
     setWithdrawId(0);
     setAddress('');
     setAmount('');
-    selectAsset(0);
+    selectAsset(selectedCoin);
     setConfirmtionCode('');
   }, [isOpen])
 

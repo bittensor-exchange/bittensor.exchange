@@ -1,22 +1,21 @@
 'use client'
 import * as React from 'react';
-import Box from '@mui/material/Box';
-import Modal from '@mui/material/Modal';
 import Image from 'next/image';
-import Typography from '@mui/material/Typography';
 import { FormControl, InputLabel, Select, MenuItem, TextField, IconButton, InputAdornment, OutlinedInput } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { CopyAll, QrCode, Close } from '@mui/icons-material';
+import { CopyAll } from '@mui/icons-material';
 import { IRoot } from '@/data/store';
 import { useSelector } from 'react-redux';
 import { copy2Clipboard } from '../../../utils/helpers';
 import DefaultModal from '..';
 
-export default function DepositModal({ isOpen, showModal}) {
+export default function DepositModal({ isOpen, showModal, selectedCoin}) {
   
-  const [assetNo, selectAsset] = useState(0);
-  const [address, setAddress] = useState('');
+  const [assetNo, selectAsset] = useState(selectedCoin);
   const { assets } = useSelector((state: IRoot) => state.asset);
+  useEffect(() => {
+    selectAsset(selectedCoin);
+  }, [isOpen])
 
   return (
       <DefaultModal isOpen={isOpen} showModal={showModal} title='Deposit Crypto'>

@@ -1,5 +1,5 @@
 'use client'
-import { AddBox, Input, Output, Visibility } from '@mui/icons-material'
+import { AddBox, Output, Visibility } from '@mui/icons-material'
 import { Button, IconButton } from '@mui/material'
 import numbro from 'numbro'
 import Image from 'next/image'
@@ -17,6 +17,7 @@ export default function Assets () {
     const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
     const [isDepositModalOpen, showDepositModal] = useState(false)
     const [isWithdrawModalOpen, showWithdrawModal] = useState(false)
+    const [selectedCoin, setSelectedCoin] = useState(0);
     const { assets } = useSelector((state: IRoot) => state.asset);
     const { price } = useSelector((state: IRoot) => state.pair.lastTrade);
     const [totalBtc, setTotalBtc] = useState(0);
@@ -88,10 +89,10 @@ export default function Assets () {
                                 {numbro(item.balance).format({thousandSeparated: true, mantissa: 6, trimMantissa: true})}
                             </div>
                             <div className="w-[100px] text-right">
-                                <IconButton aria-label="visibility" sx={{width: 24, height: 24}}>
+                                <IconButton aria-label="visibility" sx={{width: 24, height: 24}} onClick={() => {showDepositModal(true), setSelectedCoin(index)}}>
                                     <AddBox sx={{width: 20, height: 20}} />
                                 </IconButton>
-                                <IconButton aria-label="visibility" sx={{width: 24, height: 24}}>
+                                <IconButton aria-label="visibility" sx={{width: 24, height: 24}} onClick={() => {showWithdrawModal(true), setSelectedCoin(index)}}>
                                     <Output sx={{width: 20, height: 20}} />
                                 </IconButton>
                             </div>
@@ -99,8 +100,8 @@ export default function Assets () {
                     ))
                 }
             </div>
-            <DepositModal isOpen={isDepositModalOpen} showModal={showDepositModal} />
-            <WithdrawalModal isOpen={isWithdrawModalOpen} showModal={showWithdrawModal}/>
+            <DepositModal isOpen={isDepositModalOpen} showModal={showDepositModal} selectedCoin={selectedCoin}/>
+            <WithdrawalModal isOpen={isWithdrawModalOpen} showModal={showWithdrawModal} selectedCoin={selectedCoin}/>
         </div>
     )
 }
