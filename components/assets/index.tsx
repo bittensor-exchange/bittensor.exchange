@@ -1,5 +1,5 @@
 'use client'
-import { AddBox, Output, Visibility } from '@mui/icons-material'
+import { AddBox, Output, Visibility, VisibilityOff } from '@mui/icons-material'
 import { Button, IconButton } from '@mui/material'
 import numbro from 'numbro'
 import Image from 'next/image'
@@ -48,7 +48,7 @@ export default function Assets () {
             <div className="py-2 flex items-end pt-4 pl-2">
                 <label className='pr-2'>Assets Overview</label>
                 <IconButton aria-label="visibility" sx={{width: 20, height: 20}} onClick={() => setHideAsset(!hideAsset)}>
-                    <Visibility sx={{width: 16, height: 16}} />
+                    {!hideAsset ? <Visibility sx={{width: 16, height: 16}} /> : <VisibilityOff sx={{width: 16, height: 16}} />}
                 </IconButton>
             </div>
             <div className='flex items-end pl-2 pt-2'>

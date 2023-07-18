@@ -56,7 +56,7 @@ export default function DashboardLayout({ children }: {
             <nav className="z-10 w-full items-center justify-between font-mono text-sm flex h-[64px] shrink-0 border-b dark:border-zinc-800 shadow dark:shadow-none dark:bg-zinc-900">
                 <Link href="/" className="flex items-center ml-2 w-[250px]">
                     <Image
-                        className=""
+                        className="object-cover h-[48px]"
                         src="/banner.svg"
                         alt="Tensor Exchange"
                         width={180}
