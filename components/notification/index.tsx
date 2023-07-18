@@ -73,8 +73,8 @@ export default function Notification() {
               (notifications && notifications.length) ? notifications.slice(0,4).map((notification, index) => (
                 <li key={index} className="flex flex-col p-2 dark:hover:bg-zinc-900 pr-8 relative">
                   <label className="text-[14px] font-bold">{notification.title}</label>
-                  <p className="text-[12px] pt-1">{notification.body}</p>
-                  <p className="text-[10px]">{moment(notification.createdAt).toLocaleString()}</p>
+                  <div className="text-[12px] pt-1">{notification.body}</div>
+                  <div className="text-[10px]">{moment(notification.createdAt).toLocaleString()}</div>
                   <IconButton sx={{width:14, height:14, position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)'}} onClick={() => readNotification(notification.id)}>
                     <Close sx={{width: 10, height: 10}} />
                   </IconButton>

@@ -19,7 +19,7 @@ export default function FirstLoading() {
           height={140}
           priority
         />
-        <p className="fixed left-0 bottom-0 flex w-full justify-center text-[32px] from-zinc-200 pb-20 pt-16 lg:static lg:w-auto lg:p-4 animate-pulse font-mono text-buy">
+        <div className="fixed left-0 bottom-0 flex w-full justify-center text-[32px] from-zinc-200 pb-20 pt-16 lg:static lg:w-auto lg:p-4 animate-pulse font-mono text-buy">
           {text.map((char, idx) => (
             <span key={idx} style={{
               animation: `fadein 0.5s ease-in-out ${idx / 16}s forwards`,
@@ -30,7 +30,7 @@ export default function FirstLoading() {
               {char}
             </span>
           ))}
-        </p>
+        </div>
       </div>
 
       <div className="mb-32 grid text-center lg:mb-0 lg:grid-cols-4 lg:text-left">
