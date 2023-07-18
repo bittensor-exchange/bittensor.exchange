@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 import { CopyAll, QrCode, Close } from '@mui/icons-material';
 import { IRoot } from '@/data/store';
 import { useSelector } from 'react-redux';
+import { copy2Clipboard } from '../../../utils/helpers';
 import DefaultModal from '..';
 
 export default function DepositModal({ isOpen, showModal}) {
@@ -78,7 +79,7 @@ export default function DepositModal({ isOpen, showModal}) {
                 <IconButton
                   aria-label="Copy Address"
                   edge="end"
-                  onClick={e => navigator.clipboard.writeText(address)}
+                  onClick={() => copy2Clipboard(assets[assetNo].deposit_address)}
                 >
                   <CopyAll />
                 </IconButton>
