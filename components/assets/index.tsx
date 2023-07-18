@@ -11,6 +11,7 @@ import { fetchAsset } from '@/data/container/asset'
 import { ThunkDispatch } from '@reduxjs/toolkit'
 import WithdrawalModal from '../modals/withdrawal'
 import { fetchCurrentPair } from '@/data/container/pair'
+import { Skeleton } from '@mui/material'
 
 export default function Assets () {
 
@@ -86,7 +87,8 @@ export default function Assets () {
                                 <label className='pl-1'>{item.name}</label>
                             </div>
                             <div className="w-[120px]">
-                                {numbro(item.balance).format({thousandSeparated: true, mantissa: 6, trimMantissa: true})}
+                                {!hideAsset ? numbro(item.balance).format({thousandSeparated: true, mantissa: 6, trimMantissa: true}) :
+                                <Skeleton animation={false} height={20}/>}
                             </div>
                             <div className="w-[100px] text-right">
                                 <IconButton aria-label="visibility" sx={{width: 24, height: 24}} onClick={() => {showDepositModal(true), setSelectedCoin(index)}}>
