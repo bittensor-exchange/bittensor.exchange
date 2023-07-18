@@ -52,6 +52,13 @@ export default function Notification() {
     });
   }
 
+  const readAllNotification = () => {
+    console.log('readAll');
+    axios.post(`/api/notifications/read/all`).then(res => { 
+      mutate();
+    });
+  }
+
   return (
     <div>
       <IconButton onClick={handleClick}>
@@ -88,7 +95,7 @@ export default function Notification() {
               (notifications && notifications.length > 2) &&
               (
                 <li className="flex flex-col pt-1 relative">
-                  <Button variant="text" onClick={() => {}} size="small" sx={{background: "transparent"}} fullWidth>Read all</Button>
+                  <Button variant="text" onClick={readAllNotification} size="small" sx={{background: "transparent"}} fullWidth>Read all</Button>
                 </li>
               )
             }
