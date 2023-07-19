@@ -131,9 +131,9 @@ export default function LogIn() {
 					>
 							Log In
 					</Button>
-					<Grid container>
+					<Grid container className='z-50 relative'>
 							<Grid item xs>
-							<Link href="#" variant="body2">
+							<Link href="/forgot-password" variant="body2">
 									Forgot password?
 							</Link>
 							</Grid>

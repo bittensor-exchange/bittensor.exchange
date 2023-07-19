@@ -34,30 +34,23 @@ function Copyright(props: any) {
   );
 }
 
-export default function SignUp() {
+export default function ForgotPasswordPage() {
   const [isModalOpen, setModalOpen] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState("");
-  const [password, setPassword] = React.useState("");
   const [loading, setLoading] = React.useState(false);
 
   const showModal = (isOpen: boolean) => {
     if (!isOpen) {
       setErrorMessage("");
-      setPassword("");
     }
     setModalOpen(isOpen);
   };
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    const signupData = {
-      name: data.get("firstName") + " " + data.get("lastName"),
-      email: data.get("email"),
-      password: data.get("password"),
-    };
     setLoading(true);
     axios
-      .post("/api/auth/register", signupData)
+      .post("/api/auth/forgot-password", { email: data.get("email") })
       .then(() => {
         showModal(true);
         setLoading(false);
@@ -95,31 +88,15 @@ export default function SignUp() {
           </Avatar>
         </Link>
         <Typography component="h1" variant="h5">
-          Sign up
+          Forgot Password
         </Typography>
-        <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+        <Box
+          component="form"
+          noValidate
+          onSubmit={handleSubmit}
+          sx={{ mt: 3, width: 400 }}
+        >
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                autoComplete="given-name"
-                name="firstName"
-                required
-                fullWidth
-                id="firstName"
-                label="First Name"
-                autoFocus
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                required
-                fullWidth
-                id="lastName"
-                label="Last Name"
-                name="lastName"
-                autoComplete="family-name"
-              />
-            </Grid>
             <Grid item xs={12}>
               <TextField
                 required
@@ -128,25 +105,6 @@ export default function SignUp() {
                 label="Email Address"
                 name="email"
                 autoComplete="email"
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                required
-                fullWidth
-                name="password"
-                label="Password"
-                type="password"
-                id="password"
-                autoComplete="new-password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <FormControlLabel
-                control={<Checkbox value="allowExtraEmails" color="primary" />}
-                label="I want to receive inspiration, marketing promotions and updates via email."
               />
             </Grid>
           </Grid>
@@ -158,12 +116,12 @@ export default function SignUp() {
             color="success"
             type="submit"
           >
-            Sign Up
+            Email me a recovery link
           </LoadingButton>
           <Grid container justifyContent="flex-end">
             <Grid item>
               <Link href="/login" variant="body2" className="dark:text-white">
-                Already have an account? Sign in
+                Back to Sign in
               </Link>
             </Grid>
           </Grid>
@@ -174,7 +132,7 @@ export default function SignUp() {
         <Typography component="h6" className="whitespace-pre">
           {errorMessage
             ? errorMessage
-            : `Thank you for signing up!\nTo activate your account, please check your email.`}
+            : `Thank you for tensor.Exchange!\nTo reset your password, please click on the link\nin the email just sent to you.`}
         </Typography>
       </DefaultModal>
     </Container>

@@ -14,6 +14,7 @@ import Image from "next/image";
 import { Modal } from "@mui/material";
 import DefaultModal from "@/components/modals";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 import { LoadingButton } from "@mui/lab";
 
 function Copyright(props: any) {
@@ -34,10 +35,17 @@ function Copyright(props: any) {
   );
 }
 
-export default function SignUp() {
+export default function ResetPasswordPage({
+  params,
+}: {
+  params: { token: string };
+}) {
+  const { replace } = useRouter();
   const [isModalOpen, setModalOpen] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState("");
   const [password, setPassword] = React.useState("");
+  const [passwordRepeat, setPasswordRepeat] = React.useState("");
+  const [passwordMismatch, setPasswordMismatch] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
 
   const showModal = (isOpen: boolean) => {
@@ -50,24 +58,31 @@ export default function SignUp() {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    const signupData = {
-      name: data.get("firstName") + " " + data.get("lastName"),
-      email: data.get("email"),
-      password: data.get("password"),
-    };
+
+    if (!password || !passwordRepeat) return;
+
+    if (password !== passwordRepeat) {
+      setPasswordMismatch(true);
+      return;
+    }
     setLoading(true);
     axios
-      .post("/api/auth/register", signupData)
+      .post("/api/auth/reset-password", {
+        token: params.token,
+        newPassword: data.get("password"),
+      })
       .then(() => {
         showModal(true);
         setLoading(false);
+        setTimeout(() => {
+          showModal(false);
+          replace("/login");
+        }, 2000);
       })
       .catch((error) => {
-        if (error.response.data.message) {
-          setErrorMessage(error.response.data.message.join("\n"));
-          showModal(true);
-          setLoading(false);
-        }
+        setErrorMessage(error.response.data);
+        showModal(true);
+        setLoading(false);
       });
   };
 
@@ -95,47 +110,16 @@ export default function SignUp() {
           </Avatar>
         </Link>
         <Typography component="h1" variant="h5">
-          Sign up
+          Reset your password
         </Typography>
         <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                autoComplete="given-name"
-                name="firstName"
-                required
-                fullWidth
-                id="firstName"
-                label="First Name"
-                autoFocus
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                required
-                fullWidth
-                id="lastName"
-                label="Last Name"
-                name="lastName"
-                autoComplete="family-name"
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                required
-                fullWidth
-                id="email"
-                label="Email Address"
-                name="email"
-                autoComplete="email"
-              />
-            </Grid>
             <Grid item xs={12}>
               <TextField
                 required
                 fullWidth
                 name="password"
-                label="Password"
+                label="New Password"
                 type="password"
                 id="password"
                 autoComplete="new-password"
@@ -144,9 +128,16 @@ export default function SignUp() {
               />
             </Grid>
             <Grid item xs={12}>
-              <FormControlLabel
-                control={<Checkbox value="allowExtraEmails" color="primary" />}
-                label="I want to receive inspiration, marketing promotions and updates via email."
+              <TextField
+                required
+                fullWidth
+                name="password"
+                label="Repeat your Password"
+                type="password"
+                id="passwordRepeat"
+                autoComplete="new-password"
+                value={passwordRepeat}
+                onChange={(e) => setPasswordRepeat(e.target.value)}
               />
             </Grid>
           </Grid>
@@ -158,12 +149,12 @@ export default function SignUp() {
             color="success"
             type="submit"
           >
-            Sign Up
+            Reset
           </LoadingButton>
           <Grid container justifyContent="flex-end">
             <Grid item>
               <Link href="/login" variant="body2" className="dark:text-white">
-                Already have an account? Sign in
+                Or remember password now? Sign in
               </Link>
             </Grid>
           </Grid>
@@ -174,7 +165,14 @@ export default function SignUp() {
         <Typography component="h6" className="whitespace-pre">
           {errorMessage
             ? errorMessage
-            : `Thank you for signing up!\nTo activate your account, please check your email.`}
+            : `We've successfully updated your password.`}
+        </Typography>
+      </DefaultModal>
+      <DefaultModal isOpen={passwordMismatch} showModal={setPasswordMismatch}>
+        <Typography component="h6" className="whitespace-pre">
+          {errorMessage
+            ? errorMessage
+            : `Please check your password again!\nPasswords don't match.`}
         </Typography>
       </DefaultModal>
     </Container>
