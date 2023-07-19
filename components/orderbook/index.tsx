@@ -7,10 +7,11 @@ import { ThunkDispatch } from "@reduxjs/toolkit";
 import { fetchLastTrade } from "@/data/container/pair";
 import { IRoot } from "@/data/store";
 import cn from 'classnames';
+import numbro from 'numbro';
 
 export default function OrderBook () {
     
-    const { name: currentPairName } = useSelector((state: IRoot) => state.pair.currentPair);
+    const { name: currentPairName, quote_price } = useSelector((state: IRoot) => state.pair.currentPair);
     const { price: lastPrice, takerAction } = useSelector((state: IRoot) => state.pair.lastTrade);
     const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
 
@@ -53,7 +54,7 @@ export default function OrderBook () {
             <div className='flex flex-col'>
                 <div className="text-[12px] pt-2 pb-1 flex">
                     <div className="w-[90px]">
-                        Price (TAO)
+                        Price (BTC)
                     </div>
                     <div className="w-[100px] text-right">
                         Amount
@@ -67,7 +68,7 @@ export default function OrderBook () {
             <div className='flex flex-col'>
                 <div className="flex text-[12px] text-bold py-1 items-center">
                     <div className={cn("text-[14px] font-mono", highlight && (takerAction == "buy" ? 'text-buy' : 'text-sell'))}>{lastPrice ?? ""}</div>
-                    <div className="pl-4 text-[12px]">50.8$</div>
+                    <div className="pl-2 text-[12px]">≈ {numbro(lastPrice * quote_price).formatCurrency()}</div>
                 </div>
                 <Orders type="buy" data={buyOrders} />
             </div>
