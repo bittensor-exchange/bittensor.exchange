@@ -1,11 +1,14 @@
 {
   "name": "bittensor.exchange",
-  "version": "0.1.0",
+  "version": "0.2.0",
+  "description": "CEX platform over Bittensor",
+  "author": "salahawk <tylermcguy@gmail.com>",
   "private": true,
   "scripts": {
     "start:dev": "next dev",
     "start:staging": "next build && next start",
     "start:prod": "next build && next start",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
