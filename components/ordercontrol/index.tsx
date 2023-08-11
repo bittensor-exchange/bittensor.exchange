@@ -7,7 +7,7 @@ import { Tab } from '@mui/material';
 
 export default function OrderControl () {
 
-    const menu = ["Limit", "Market"];
+    const menu = ["Limit", "Market", "Iceberg"];
     const [value, setValue] = useState('limit');
 
     const handleChange = (event: React.SyntheticEvent, newValue: string) => {

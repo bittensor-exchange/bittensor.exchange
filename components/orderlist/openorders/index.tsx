@@ -28,8 +28,8 @@ export default function OpenOrders() {
       valueGetter: (params: GridValueGetterParams) =>
       `${numbro(params.row.amount).format({mantissa: 6, trimMantissa: true})} ${params.row.pair.token1}`,
     },
-    { field: 'filled', headerName: 'Filled', valueGetter: (params: GridValueGetterParams) => params.row.filled + " " + params.row.pair.token1, flex: 0.5, },
-    { field: 'unfilled', headerName: 'Unfilled', valueGetter: (params: GridValueGetterParams) => params.row.amount - params.row.filled + " " + params.row.pair.token1, flex: 0.5, },
+    { field: 'filled', headerName: 'Filled', valueGetter: (params: GridValueGetterParams) => (params.row.type == "iceberg" ? params.row.icebergfilled : params.row.filled) + " " + params.row.pair.token1, flex: 0.5, },
+    { field: 'unfilled', headerName: 'Unfilled', valueGetter: (params: GridValueGetterParams) => (params.row.type == "iceberg" ? params.row.icebergTotal - params.row.icebergfilled : params.row.amount - params.row.filled) + " " + params.row.pair.token1, flex: 0.5, },
     { field: 'operation', headerName: 'Cancel', 
       renderHeader: () => <div className='text-buy cursor-pointer'>Cancel All</div>, 
       sortable: false, filterable: false, hideable: false, minWidth: 130, flex: 0.5,
