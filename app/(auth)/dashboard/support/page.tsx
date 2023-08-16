@@ -9,21 +9,21 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
-  MenuItem,
   Stack,
   TextField,
   Tooltip,
 } from "@mui/material";
-import { Delete, Edit, Chat } from "@mui/icons-material";
+import { Delete, Edit } from "@mui/icons-material";
 import { useSelector } from "react-redux";
 import { IRoot } from "@/data/store";
 import useApi from "@/hooks/useApi";
 import axios from "axios";
-
-const rolesType = ["admin", "user", "support", "banned", "restricted"];
+import ChatModal from "@/components/modals/chat";
 
 const Support = () => {
   const openOrders = useSelector((state: IRoot) => state.api.openOrders);
+  const [isChatOpen, showChatModal] = useState(false);
+  const [curTicket, setCurTicket] = useState({});
   const { data: rows, loading, mutate } = useApi("/api/support/all");
 
   useEffect(() => {
@@ -127,6 +127,12 @@ const Support = () => {
         accessorKey: "title",
         header: "Title",
         enableEditing: true,
+        Cell: ({cell, row}) => (
+          <div className="underline cursor-pointer" onClick={() => {
+            showChatModal(true);
+            setCurTicket(cell?.row);
+          }}>{cell.getValue()}</div>
+        )
       },
       {
         accessorKey: "createdAt",
@@ -181,11 +187,6 @@ const Support = () => {
                 <Delete />
               </IconButton>
             </Tooltip>
-            <Tooltip arrow placement="right" title="Chat">
-              <IconButton onClick={() => alert("doing chat")}>
-                <Chat />
-              </IconButton>
-            </Tooltip>
           </Box>
         )}
         renderTopToolbarCustomActions={() => (
@@ -203,6 +204,11 @@ const Support = () => {
         open={createModalOpen}
         onClose={() => setCreateModalOpen(false)}
         onSubmit={handleCreateNewRow}
+      />
+      <ChatModal
+        isOpen={isChatOpen}
+        showModal={showChatModal}
+        curTicket={curTicket}
       />
     </div>
   );

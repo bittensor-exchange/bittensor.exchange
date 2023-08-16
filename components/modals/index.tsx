@@ -18,7 +18,7 @@ const style = {
   p: 4,
 };
 
-export default function DefaultModal({ isOpen, showModal, title = "", width = 500, children}) {
+export default function DefaultModal({ isOpen, showModal, title = "", width = "500", children}) {
   
   return (
       <Modal
