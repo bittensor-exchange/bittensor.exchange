@@ -57,7 +57,7 @@ export default function ForgotPasswordPage() {
       })
       .catch((error) => {
         if (error.response.data.message) {
-          setErrorMessage(error.response.data.message.join("\n"));
+          setErrorMessage(error.response.data.message);
           showModal(true);
           setLoading(false);
         }

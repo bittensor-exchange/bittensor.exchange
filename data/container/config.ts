@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit"
 
-export type ThemeColor = 'light' | 'dark';
+export type ThemeColor = 'light' | 'dark' | 'system';
 
 export interface ConfigState {
   theme: ThemeColor;

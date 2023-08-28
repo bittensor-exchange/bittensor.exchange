@@ -113,7 +113,10 @@ export default function DashboardLayout({ children }: {
                             horizontal: 'left',
                         }}
                     >
-                    <Button color="inherit" className="bg-zinc-200 dark:bg-zinc-700" onClick={onLogOut}>Logout</Button>
+                    <div className="flex flex-col bg-zinc-200 dark:bg-zinc-700">
+                        <Button color="inherit" onClick={() => router.replace('/dashboard/support')}>Support</Button>
+                        <Button color="error" onClick={onLogOut}>Log out</Button>
+                    </div>
                 </Popover>
             </nav>
             <main className="flex-grow">

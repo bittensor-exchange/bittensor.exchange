@@ -11,6 +11,7 @@ import { updateOpenOrders } from '@/data/container/api';
 import { IRoot } from '@/data/store';
 import { fetchAsset } from '@/data/container/asset';
 import { ThunkDispatch } from '@reduxjs/toolkit';
+import useApi from '@/hooks/useApi';
 
 const marks = [
     { value: 0, label: '',},
@@ -27,13 +28,32 @@ export default function OrderForm ({ action = "buy", type = "limit" }) {
 
     const [price, setPrice] = useState("");
     const [amount, setAmount] = useState("");
+    const [iceberg, setIceberg] = useState("");
     const [sliderValue, setSliderValue] = useState(0);
+    const [configData, setconfigData] = useState({MinTaoIcebergAmount: 0,
+        MinBtcIcebergAmount: 0,
+        NumberofIceberg: 0
+    });
+    const { data: config, mutate } = useApi("/api/configs");
 
     const btc = 30000;
     const [loading, setLoading] = useState(false);
     const { enqueueSnackbar } = useSnackbar();
     const dispatch = useDispatch();
     const dispatchThunk = useDispatch<ThunkDispatch<any, any, any>>();
+
+    useEffect(() => {
+        const timer = setInterval(mutate, 3000);
+        return () => clearInterval(timer);
+    }, [])
+
+    useEffect(() => {
+        setconfigData({
+            MinTaoIcebergAmount: config?.filter(item => item.key == "MinTaoIcebergAmount")[0]["value"],
+            MinBtcIcebergAmount: config?.filter(item => item.key == "MinBtcIcebergAmount")[0]["value"],
+            NumberofIceberg: config?.filter(item => item.key == "NumberofIceberg")[0]["value"]
+        })
+    }, [config])
 
     const onAmountChange = (e) => { 
         setAmount(e.target.value);
@@ -71,13 +91,16 @@ export default function OrderForm ({ action = "buy", type = "limit" }) {
             const resp = await axios.post('/api/orders/create', {
                 pair: 'TAO/BTC',
                 price: type == "market" ? 0 : Number(price),
-                amount: Number(amount),
-                action: action,
-                type: type,
+                amount: type == "iceberg" ? Number(iceberg) : Number(amount),
+                action,
+                type,
+                icebergTotal: Number(amount),
+                icebergfilled: 0
             })
             console.log(resp);
             setPrice("");
             setAmount("");
+            setIceberg("");
             setSliderValue(0);
             enqueueSnackbar({
                 message: <div><label className='text-[16px] font-bold'>Success!</label><br/>{`${type.toUpperCase()} ${action.toUpperCase()} TAO/BTC`}</div>,
@@ -101,10 +124,14 @@ export default function OrderForm ({ action = "buy", type = "limit" }) {
     const volumn = price && amount ? Number(price) * Number(amount) : 0;
 
     return (
-        <div className="w-full flex flex-col px-2 py-2">
+        <div className="w-full flex flex-col px-1 py-2">
             <div className='w-full border dark:border-zinc-600 rounded h-[30px] flex items-center px-1 text-[12px] text-zinc-500 mt-2'>
                 {
-                    type == "limit" ?
+                    type == "market" ?
+                        <div className='text-center w-full'>
+                            Best Market Price
+                        </div>
+                        :
                         <>
                             <label>Price</label>
                             <Tooltip title={`≈ ${numbro(btc * Number(price)).formatCurrency()}`} placement="top-end" arrow sx={{fontSize: 14}}>
@@ -116,20 +143,31 @@ export default function OrderForm ({ action = "buy", type = "limit" }) {
                             </Tooltip>
                             <label>BTC</label>
                         </>
-                        :
-                        <div className='text-center w-full'>
-                            Best Market Price
-                        </div>
                 }
             </div>
-            <div className={cn('w-full border dark:border-zinc-600 rounded h-[30px] flex items-center px-1 text-[12px] text-zinc-500 mt-2', sliderValue > 100 && 'animate-shake !border-sell/[0.8]')}>
-                <label>Amount</label>
-                <input className='bg-transparent flex-grow px-2 text-right text-[14px] font-bold outline-none w-[50px] dark:text-white' 
-                    value={amount}
-                    onChange={onAmountChange}
-                />
-                {/* <label>{ type == "limit" || action == "sell" ? pair.token1 : pair.token2 } </label> */}
-                <label>{ pair.token1 } </label>
+            
+            <div className='flex gap-1'>
+                <div className={cn('w-full border dark:border-zinc-600 rounded h-[30px] flex items-center px-1 text-[12px] text-zinc-500 mt-2', sliderValue > 100 || parseInt(amount) < configData?.MinTaoIcebergAmount  && 'animate-shake !border-sell/[0.8]')}>
+                    <label>Amount</label>
+                    <Tooltip title={type != "iceberg" ? "" : `Min Amount: ${configData?.MinTaoIcebergAmount}`} placement='bottom-end' arrow sx={{fontSize: 14}}>
+                        <input className='bg-transparent flex-grow px-2 text-right text-[14px] font-bold outline-none w-[50px] dark:text-white' 
+                            value={amount}
+                            onChange={onAmountChange}
+                        />
+                    </Tooltip>
+                    <label>{ pair.token1 } </label>
+                </div>
+                {type == "iceberg" && 
+                    <div className={cn('w-full border dark:border-zinc-600 rounded h-[30px] flex items-center px-1 text-[12px] text-zinc-500 mt-2', parseInt(iceberg) < Math.max(configData?.MinTaoIcebergAmount, parseInt(amount) / configData?.NumberofIceberg) && 'animate-shake !border-sell/[0.8]')}>
+                        <Tooltip title={`Min Amount: ${!Math.max(configData?.MinTaoIcebergAmount, parseInt(amount) / configData?.NumberofIceberg) ? "0" : Math.max(configData?.MinTaoIcebergAmount, parseInt(amount) / configData?.NumberofIceberg) }`} placement='bottom-end' arrow sx={{fontSize: 14}}>
+                            <input className='bg-transparent flex-grow px-2 text-right text-[14px] font-bold outline-none w-[50px] dark:text-white' 
+                                value={iceberg}
+                                onChange={(e) => setIceberg(e.target.value)}
+                            />
+                        </Tooltip>
+                        <label>{ pair.token1 } </label>
+                    </div>
+                }
             </div>
             <Slider
                 aria-label="slider"
